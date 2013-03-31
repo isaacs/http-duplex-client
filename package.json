@@ -1,0 +1,25 @@
+{
+  "name": "http-duplex-client",
+  "version": "0.0.0",
+  "description": "Duplex API for making an HTTP request (write the req, read the response)",
+  "main": "client.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/isaacs/http-duplex-client"
+  },
+  "keywords": [
+    "http",
+    "duplex",
+    "client",
+    "request",
+    "hyperquest",
+    "megaquest",
+    "zombiejesus",
+    "easteregg"
+  ],
+  "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me)",
+  "license": "BSD"
+}
