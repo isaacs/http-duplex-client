@@ -1,6 +1,6 @@
 {
   "name": "http-duplex-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Duplex API for making an HTTP request (write the req, read the response)",
   "main": "client.js",
   "scripts": {
