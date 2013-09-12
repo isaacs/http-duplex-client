@@ -15,6 +15,8 @@ function HTTPDuplex(req, options) {
   self.req = http.request(req)
   self.req.on('response', function (resp) {
     self._resp = resp
+    self.emit('response', resp)
+
     resp.on('data', function (c) {
       if (!self.push(c)) self._resp.pause()
     })
