@@ -1,79 +1,38 @@
-// vim: set softtabstop=3 shiftwidth=3:
-module . exports = ZombieJesus
+module.exports = HTTPDuplex
 
-var http = require ('http')
-var util = require ('util')
-var stream = require ('stream')
-if (process.version.match(/^\v0\.8/))
-   stream = require ('readable-stream')
+var http = require('http')
+  , util = require('util')
+  , stream = require('stream')
+if (process.version.match(/^\v0\.8/)) stream = require('readable-stream')
 
-util . inherits (ZombieJesus, stream . Duplex)
-function ZombieJesus (req, options) {
-   var ΑΩ = this
+util.inherits(HTTPDuplex, stream.Duplex)
+function HTTPDuplex(req, options) {
+  var self = this
 
-   if (! (ΑΩ instanceof ZombieJesus))
-      return new ZombieJesus (req, options)
+  if (! (self instanceof HTTPDuplex)) return new HTTPDuplex(req, options)
 
-   stream . Duplex.call (ΑΩ, options)
-   ΑΩ . _α = http . request (req)
-   ΑΩ . _α . on ('response', function (ω) {
-      ΑΩ . _ω = ω
-      ω . on ('data', function (c) {
-         if (!ΑΩ . push (c))
-            ΑΩ . _ω . pause ()
-      })
-      ω . on ('end', function() {
-         ΑΩ . push (null)
-      })
-   })
-   ΑΩ . _ω = null
+  stream.Duplex.call(self, options)
+  self.req = http.request(req)
+  self.req.on('response', function (resp) {
+    self._resp = resp
+    resp.on('data', function (c) {
+      if (!self.push(c)) self._resp.pause()
+    })
+    resp.on('end', function() {
+      self.push(null)
+    })
+  })
+  self._resp = null
 }
 
-ZombieJesus . prototype . _read = function (n) {
-   if (this . _ω)
-      this . _ω . resume ()
+HTTPDuplex.prototype._read = function (n) {
+  if (this._resp) this._resp.resume()
 }
 
-ZombieJesus . prototype . _write = function (chunk, encoding, cb) {
-   return this . _α . write (chunk, encoding, cb)
+HTTPDuplex.prototype._write = function (chunk, encoding, cb) {
+  return this.req.write(chunk, encoding, cb)
 }
 
-ZombieJesus . prototype . end = function (chunk, encoding, cb) {
-   return this . _α . end (chunk, encoding, cb)
+HTTPDuplex.prototype.end = function (chunk, encoding, cb) {
+  return this.req.end(chunk, encoding, cb)
 }
-
-//
-//                               |
-//                   \           |           /
-//                    \          |          /
-//                     \        _j_        /
-//                      \    _ |888| _    /
-//                       \.-"  |888|  "-./
-//        `-._          .'_____|888|_____`.          _.-'
-//            `-._    .' |888888888888888| `.    _.-'
-//                `-./ | |888888888888888|   \,-'
-//                  /__|__"""""|888|""""" _|_ \
-//                 |   |  _..::|888|::.._  |   |
-//        ---------|..-|:::::::|888|:::::::|-..|---------
-//               .-::::|:::::::|888|::::::::::::-.
-//             .:::::::|:::::::|888|:::::::::::::::.
-//           .:::::::::::::::::|888|:::::::::::::::::.
-//          :::::::::::::::::::|888|:::::::::::::::::::
-//        .::::::::::::::::::::|888|::::::::::::::::::::.
-//       .::::::::::::::::::::::"""::::::::::::::::::::::.
-//      _____ _____     _____     _______  _______  _____   _____
-//       \ /   \ /      / _ \      \  __ \  \  __ \  \ /     \ /
-//       | |   | |     / / \ \     | |  \ \ | |  \ \  \ \   / /
-//       | |___| |    / /___\ \    | |__/ / | |__/ /   \ \_/ /
-//       |  ___  |    |  ___  |    |  ___/  |  ___/     \   /
-//       | |   | |    | |   | |    | |      | |          | |
-//       | |   | |    | |   | |    | |      | |          | |
-//      _/_\_ _/_\_  _/_\_ _/_\_  _/_\_    _/_\_        _/_\_
-// _________      _____      ______   _________  _________  _______
-//  \  ____ |     / _ \     / ____ | | __   __ |  \  ____ |  \  __ \
-//  | |    \|    / / \ \   / /    \| |/  | |  \|  | |    \|  | |  \ \
-//  | |__/|     / /___\ \  \ \____       | |      | |__/|    | |__/ /
-//  |  __ |     |  ___  |   \____ \      | |      |  __ |    |  __ <
-//  | |  \|     | |   | |        \ \     | |      | |  \|    | |  \ \
-//  | |____/|   | |   | |  |\____/ /     | |      | |____/|  | |   | |
-// _/_______|  _/_\_ _/_\_ |______/     _/_\_    _/_______| _/_\_ _/_\_
