@@ -1,6 +1,7 @@
 module.exports = HTTPDuplex
 
 var http = require('http')
+  , https = require('https')
   , util = require('util')
   , stream = require('stream')
 if (process.version.match(/^\v0\.8/)) stream = require('readable-stream')
@@ -12,7 +13,16 @@ function HTTPDuplex(req, options) {
   if (! (self instanceof HTTPDuplex)) return new HTTPDuplex(req, options)
 
   stream.Duplex.call(self, options)
-  self.req = http.request(req)
+  self._resp = null
+
+  if (req.https) self.http = https
+  else self.http = http
+
+  self.makeRequest(req)
+}
+HTTPDuplex.prototype.makeRequest = function (req) {
+  var self = this
+  self.req = self.http.request(req)
   self.req.on('response', function (resp) {
     self._resp = resp
     self.emit('response', resp)
@@ -24,7 +34,6 @@ function HTTPDuplex(req, options) {
       self.push(null)
     })
   })
-  self._resp = null
 }
 
 HTTPDuplex.prototype._read = function (n) {
